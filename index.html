@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#10131b" />
+    <title>TradeLog | 4H Candle Journal</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand">
+          <span class="brand-mark">↗</span>
+          <div>
+            <strong>TradeLog</strong>
+            <small>PERSONAL JOURNAL</small>
+          </div>
+        </div>
+
+        <div class="side-caption">WORKSPACE</div>
+
+        <nav class="nav" aria-label="Main navigation">
+          <button type="button" class="nav-link active" data-view="dashboard">
+            <span>▦</span> Dashboard
+          </button>
+          <button type="button" class="nav-link" data-view="add">
+            <span>＋</span> Log a trade
+          </button>
+          <button type="button" class="nav-link" data-view="history">
+            <span>☷</span> Trade history
+          </button>
+
+          <div class="side-caption side-caption-inner">REVIEWS</div>
+
+          <button type="button" class="nav-link" data-view="weekly">
+            <span>▤</span> Weekly review
+          </button>
+          <button type="button" class="nav-link" data-view="monthly">
+            <span>▦</span> Monthly review
+          </button>
+          <button type="button" class="nav-link" data-view="yearly">
+            <span>▥</span> Yearly review
+          </button>
+
+          <div class="side-caption side-caption-inner">DATA</div>
+          <button type="button" class="nav-link" data-view="backup">
+            <span>⇩</span> Backup & restore
+          </button>
+        </nav>
+
+        <div class="sidebar-foot">
+          <span class="live-dot"></span> Saved in MySQL
+          <small>Local database connected through Node.js</small>
+        </div>
+      </aside>
+
+      <div class="nav-backdrop" id="navBackdrop"></div>
+
+      <div class="main-shell">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button
+              type="button"
+              class="icon-btn mobile-menu"
+              id="menuToggle"
+              aria-label="Open navigation"
+            >
+              ☰
+            </button>
+            <div class="breadcrumbs">
+              Workspace <span>/</span>
+              <strong id="breadcrumb">Dashboard</strong>
+            </div>
+          </div>
+          <div class="topbar-right">
+            <span class="online"><i></i> MySQL journal</span>
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              data-view="add"
+            >
+              ＋ Add trade
+            </button>
+          </div>
+        </header>
+
+        <main class="main-content">
+          <section class="view active" id="view-dashboard">
+            <div class="page-head">
+              <div>
+                <p class="eyebrow">YOUR JOURNEY, AT A GLANCE</p>
+                <h1>Trading dashboard</h1>
+                <p>
+                  Track the 1st and 2nd 4H candles separately and learn from
+                  your results.
+                </p>
+              </div>
+              <button class="btn btn-primary" type="button" data-view="add">
+                ＋ Log a trade
+              </button>
+            </div>
+
+            <div class="welcome">
+              <span class="welcome-icon">↗</span>
+              <div>
+                <strong>Two 4H candles. One organized journal.</strong>
+                <p>
+                  Record the 1st and 2nd 4H candles on the same date. Each keeps
+                  its own screenshot, outcome, and win rate.
+                </p>
+              </div>
+              <button type="button" class="text-link" data-view="weekly">
+                Weekly review →
+              </button>
+            </div>
+
+            <div class="section-head">
+              <div>
+                <h2>All-time performance</h2>
+                <p>Only TP and SL count toward win rate.</p>
+              </div>
+              <span class="subtle" id="overall-meta">0 trades</span>
+            </div>
+
+            <div class="stat-grid" id="overall-stats"></div>
+
+            <div class="section-head">
+              <div>
+                <h2>4H candle comparison</h2>
+                <p>Analyze each candle independently.</p>
+              </div>
+            </div>
+
+            <div class="comparison-grid" id="strategy-comparison"></div>
+
+            <div class="dashboard-grid">
+              <div class="panel">
+                <div class="panel-heading">
+                  <div>
+                    <h2>Win-rate trend</h2>
+                    <p>Last 8 months · both candles</p>
+                  </div>
+
+                  <span class="legend">
+                    <i class="legend-one"></i>
+                    <span id="legend-strategy-1">1st 4H Candle</span>
+                    <i class="legend-two"></i>
+                    <span id="legend-strategy-2">2nd 4H Candle</span>
+                  </span>
+                </div>
+
+                <div id="trend-chart" class="chart-area"></div>
+              </div>
+
+              <div class="panel" id="this-week-panel"></div>
+            </div>
+
+            <div class="section-head">
+              <div>
+                <h2>Recent trades</h2>
+                <p>Latest saved setups and screenshots.</p>
+              </div>
+              <button type="button" class="text-link" data-view="history">
+                View all →
+              </button>
+            </div>
+
+            <div class="trade-grid" id="recent-trades"></div>
+          </section>
+
+          <section class="view" id="view-add">
+            <div class="page-head">
+              <div>
+                <p class="eyebrow">ADD TO YOUR JOURNAL</p>
+                <h1 id="form-heading">Log a trade</h1>
+                <p>
+                  Choose a date and 4H candle. You can save one entry for each
+                  candle per day.
+                </p>
+              </div>
+            </div>
+
+            <div class="notice">
+              ⓘ Your selected trade date determines weekly, monthly, and yearly
+              reports—not the date you save the record.
+            </div>
+
+            <form id="trade-form" class="panel form-panel">
+              <input type="hidden" id="trade-id" />
+
+              <div class="form-section-title">
+                <span>01</span>
+                <div>
+                  <h2>Trade setup</h2>
+                  <p>Main trade information</p>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <label
+                  >Trade date
+                  <input id="trade-date" type="date" required />
+                </label>
+
+                <label
+                  >4H Candle
+                  <select id="trade-strategy" required>
+                    <option value="1">1st 4H Candle</option>
+                    <option value="2">2nd 4H Candle</option>
+                  </select>
+                </label>
+
+                <label
+                  >Instrument / Pair
+                  <select id="trade-symbol" required>
+                    <option value="">Select a pair</option>
+                    <option value="XAUUSDT">Gold (XAUUSDT)</option>
+                    <option value="ETHUSDT">Ethereum (ETHUSDT)</option>
+                    <option value="BTCUSDT">Bitcoin (BTCUSDT)</option>
+                  </select>
+                </label>
+
+                <label
+                  >Direction
+                  <select id="trade-direction">
+                    <option value="LONG">Long / Buy</option>
+                    <option value="SHORT">Short / Sell</option>
+                  </select>
+                </label>
+
+                <label
+                  >Result
+                  <select id="trade-result">
+                    <option value="OPEN">Open / Pending</option>
+                    <option value="TP">TP — Win</option>
+                    <option value="SL">SL — Loss</option>
+                    <option value="BE">BE — Breakeven</option>
+                  </select>
+                </label>
+
+                <label
+                  >Trading session
+                  <input
+                    id="trade-session"
+                    type="text"
+                    value="New York"
+                    readonly
+                  />
+                </label>
+
+                <label
+                  >Risk : Reward
+                  <input
+                    id="trade-rr"
+                    type="number"
+                    min="0"
+                    step="any"
+                    placeholder="e.g. 2"
+                  />
+                </label>
+              </div>
+
+              <div class="form-section-title">
+                <span>02</span>
+                <div>
+                  <h2>Screenshot & reflection</h2>
+                  <p>Save your chart and what you learned</p>
+                </div>
+              </div>
+
+              <label class="upload-box" for="trade-image">
+                <span>▧</span>
+                <strong>Select chart screenshot</strong>
+                <small
+                  >JPG, PNG, or WebP · automatically compressed to save database
+                  space</small
+                >
+                <input
+                  id="trade-image"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                />
+              </label>
+
+              <div id="image-preview-wrap" class="image-preview-wrap hidden">
+                <img id="image-preview" alt="Selected chart screenshot" />
+                <button
+                  class="btn btn-outline btn-sm"
+                  id="remove-image"
+                  type="button"
+                >
+                  Remove screenshot
+                </button>
+              </div>
+
+              <div class="form-grid form-grid-notes">
+                <label
+                  >Trade notes
+                  <textarea
+                    id="trade-notes"
+                    rows="5"
+                    maxlength="5000"
+                    placeholder="Why did you take this setup?"
+                  ></textarea>
+                </label>
+
+                <label
+                  >Review / Lessons learned
+                  <textarea
+                    id="trade-review"
+                    rows="5"
+                    maxlength="5000"
+                    placeholder="What went well? What would you improve?"
+                  ></textarea>
+                </label>
+              </div>
+
+              <div class="form-actions">
+                <button
+                  type="button"
+                  class="btn btn-outline"
+                  data-view="history"
+                >
+                  Cancel
+                </button>
+                <button type="submit" class="btn btn-primary" id="save-button">
+                  Save trade
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="view" id="view-history">
+            <div class="page-head">
+              <div>
+                <p class="eyebrow">YOUR SAVED SETUPS</p>
+                <h1>Trade history</h1>
+                <p>Search, filter, edit, and review every trade.</p>
+              </div>
+              <button class="btn btn-outline" id="export-csv" type="button">
+                ↓ Export CSV
+              </button>
+            </div>
+
+            <div class="panel filters">
+              <label
+                >Search
+                <input
+                  id="history-search"
+                  placeholder="Pair, notes, candle..."
+                />
+              </label>
+
+              <label
+                >4H Candle
+                <select id="history-strategy">
+                  <option value="ALL">Both candles</option>
+                  <option value="1">1st 4H Candle</option>
+                  <option value="2">2nd 4H Candle</option>
+                </select>
+              </label>
+
+              <label
+                >Result
+                <select id="history-result">
+                  <option value="ALL">All results</option>
+                  <option>TP</option>
+                  <option>SL</option>
+                  <option>BE</option>
+                  <option>OPEN</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="section-head">
+              <div>
+                <h2>Saved trades</h2>
+                <p id="history-count">0 records</p>
+              </div>
+            </div>
+
+            <div id="history-list" class="history-list"></div>
+          </section>
+
+          <section class="view" id="view-weekly">
+            <div class="page-head">
+              <div>
+                <p class="eyebrow">MONDAY TO SUNDAY</p>
+                <h1>Weekly review</h1>
+                <p>Compare the two candles and view each day's entries.</p>
+              </div>
+
+              <div class="period-tools">
+                <button
+                  id="week-prev"
+                  class="icon-btn"
+                  type="button"
+                  aria-label="Previous week"
+                >
+                  ‹
+                </button>
+                <input
+                  id="week-picker"
+                  type="date"
+                  aria-label="Select any date in the week"
+                />
+                <button
+                  id="week-next"
+                  class="icon-btn"
+                  type="button"
+                  aria-label="Next week"
+                >
+                  ›
+                </button>
+              </div>
+            </div>
+
+            <div id="weekly-summary"></div>
+            <div id="weekly-days" class="review-days"></div>
+          </section>
+
+          <section class="view" id="view-monthly">
+            <div class="page-head">
+              <div>
+                <p class="eyebrow">DAY BY DAY</p>
+                <h1>Monthly review</h1>
+                <p>See both 4H candles on each trading date.</p>
+              </div>
+
+              <div class="period-tools">
+                <button
+                  id="month-prev"
+                  class="icon-btn"
+                  type="button"
+                  aria-label="Previous month"
+                >
+                  ‹
+                </button>
+                <input
+                  id="month-picker"
+                  type="month"
+                  aria-label="Select month"
+                />
+                <button
+                  id="month-next"
+                  class="icon-btn"
+                  type="button"
+                  aria-label="Next month"
+                >
+                  ›
+                </button>
+              </div>
+            </div>
+
+            <div id="monthly-summary"></div>
+
+            <div class="panel">
+              <div class="panel-heading">
+                <h2 id="calendar-title">Calendar</h2>
+                <small>Choose a date to see both candle entries</small>
+              </div>
+              <div class="calendar" id="calendar"></div>
+            </div>
+
+            <div class="section-head">
+              <div>
+                <h2>Daily trade gallery</h2>
+                <p>Grouped by trade date.</p>
+              </div>
+            </div>
+
+            <div id="monthly-gallery" class="review-days"></div>
+          </section>
+
+          <section class="view" id="view-yearly">
+            <div class="page-head">
+              <div>
+                <p class="eyebrow">THE BIG PICTURE</p>
+                <h1>Yearly review</h1>
+                <p>Compare monthly consistency across both candles.</p>
+              </div>
+
+              <div class="period-tools">
+                <button
+                  id="year-prev"
+                  class="icon-btn"
+                  type="button"
+                  aria-label="Previous year"
+                >
+                  ‹
+                </button>
+                <input
+                  id="year-picker"
+                  type="number"
+                  min="2000"
+                  max="2100"
+                  aria-label="Year"
+                />
+                <button
+                  id="year-next"
+                  class="icon-btn"
+                  type="button"
+                  aria-label="Next year"
+                >
+                  ›
+                </button>
+              </div>
+            </div>
+
+            <div id="yearly-summary"></div>
+            <div id="yearly-months" class="year-grid"></div>
+          </section>
+
+          <section class="view" id="view-backup">
+            <div class="page-head">
+              <div>
+                <p class="eyebrow">YOUR DATA, YOUR CONTROL</p>
+                <h1>Backup & restore</h1>
+                <p>
+                  Download or restore a database backup, including screenshots.
+                </p>
+              </div>
+            </div>
+
+            <div class="comparison-grid">
+              <div class="panel backup-panel">
+                <h2>Download backup</h2>
+                <p>Download a JSON copy of the MySQL trades and screenshots.</p>
+                <button class="btn btn-primary" id="export-json" type="button">
+                  ↓ Download JSON backup
+                </button>
+              </div>
+
+              <div class="panel backup-panel">
+                <h2>Restore backup</h2>
+                <p>
+                  Import a TradeLog MySQL backup or an older TradeLog Local v2
+                  backup. This replaces your MySQL trades.
+                </p>
+                <label class="btn btn-outline file-label" for="import-json"
+                  >↑ Choose JSON backup</label
+                >
+                <input
+                  id="import-json"
+                  type="file"
+                  accept="application/json,.json"
+                  class="visually-hidden"
+                />
+              </div>
+            </div>
+
+            <div class="panel backup-panel">
+              <h2>MySQL database</h2>
+              <p id="storage-usage">Checking database records...</p>
+              <p class="subtle">
+                Trade records and compressed screenshots are stored in MySQL,
+                not in browser LocalStorage. Make regular JSON and MySQL
+                backups. This is a local-only app; do not expose the server
+                publicly without authentication.
+              </p>
+              <button class="btn btn-danger" id="clear-data" type="button">
+                Delete all MySQL trades
+              </button>
+            </div>
+          </section>
+        </main>
+
+        <footer class="app-footer">
+          <span>TradeLog · Personal trading journal</span>
+          <span>Review consistently. Improve deliberately.</span>
+        </footer>
+      </div>
+    </div>
+
+    <dialog id="trade-dialog" class="trade-dialog">
+      <button
+        type="button"
+        class="dialog-close"
+        id="close-dialog"
+        aria-label="Close details"
+      >
+        ✕
+      </button>
+      <div id="dialog-content"></div>
+    </dialog>
+
+    <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

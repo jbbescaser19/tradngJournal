@@ -1,0 +1,25 @@
+{
+  "name": "tradelog-mysql",
+  "version": "1.0.0",
+  "description": "Local MySQL API and static frontend for TradeLog",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check": "node --check server.js && node --check models/tradeModel.js && node --check ../script.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^4.22.3",
+    "mysql2": "^3.24.6"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  }
+}
